@@ -1,5 +1,6 @@
 # cocosjshotupdate
 cocosjs hot update !
+======
 
 
 提供了两种热更方案 
