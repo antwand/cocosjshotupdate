@@ -1,0 +1,2 @@
+# cocosjshotupdate
+cocosjs hot update !
