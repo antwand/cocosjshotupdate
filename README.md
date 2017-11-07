@@ -34,25 +34,25 @@ HotUpdate2 的热更特点：
  2：使用方便即插即用：
  ------------
  ``` js
- var fun = function (flag,percent) {<br>
-	if(flag == jsb.EventAssetsManager.UPDATE_FINISHED){<br>
-		cc.log("加载完成！");<br>
-		cc.director.runScene(new HelloWorldScene());<br>
-	}else if(flag == jsb.EventAssetsManager.UPDATE_PROGRESSION){<br>
-		cc.log("当前进度："+percent);<br>
-	}<br>
-}<br>
-//HotUpdate 热更使用 <br>
-// var hotupdate = new HotUpdate();<br>
-// hotupdate.run(fun);<br>
+ var fun = function (flag,percent) {
+	if(flag == jsb.EventAssetsManager.UPDATE_FINISHED){
+		cc.log("加载完成！");
+		cc.director.runScene(new HelloWorldScene());
+	}else if(flag == jsb.EventAssetsManager.UPDATE_PROGRESSION){
+		cc.log("当前进度："+percent);
+	}
+}
+//HotUpdate 热更使用 
+// var hotupdate = new HotUpdate();
+// hotupdate.run(fun);
 
 
-//HotUpdate2 热更使用 <br>
-var hotupdate2 = new HotUpdate2();<br>
-hotupdate2.onLoad();<br>
-hotupdate2.hotUpdate(fun);<br>
+//HotUpdate2 热更使用 
+var hotupdate2 = new HotUpdate2();
+hotupdate2.onLoad();
+hotupdate2.hotUpdate(fun);
 
-
+ ```
 
 
 
