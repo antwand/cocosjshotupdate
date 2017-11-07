@@ -32,22 +32,55 @@ var HelloWorldLayer = cc.Layer.extend({
         // this.addChild(this.sprite, 0);
 
 
-        this.sprite2 = new cc.Sprite(res.p_1_png);
-        this.sprite2.attr({
-            x: size.width / 2 + 300,
-            y: size.height / 2 -240
-        });
-        this.addChild(this.sprite2, 2);
+        // this.sprite2 = new cc.Sprite(res.p_1_png);
+        // this.sprite2.attr({
+        //     x: size.width / 2 + 300,
+        //     y: size.height / 2 -240
+        // });
+        // this.addChild(this.sprite2, 2);
+        //
+        //
+        // this.sprite3 = new cc.Sprite(res.chip_png);
+        // this.sprite3.attr({
+        //     x: size.width / 2 + 200,
+        //     y: size.height / 2 -230
+        // });
+        // this.addChild(this.sprite3, 2);
 
 
-        this.sprite3 = new cc.Sprite(res.chip_png);
-        this.sprite3.attr({
-            x: size.width / 2 + 200,
-            y: size.height / 2 -230
-        });
-        this.addChild(this.sprite3, 2);
+
+        var button =new ccui.Button();
+        button.x=size.width/2;
+        button.y=size.height/2;
+        button.loadTextures(res.HelloWorld_png,res.HelloWorld_png);
+        button.addTouchEventListener(this.touchEvent, this);
+        this.addChild(button);
+
 
         return true;
+    },
+
+    touchEvent: function (sender, type) {
+        switch (type) {
+            case ccui.Widget.TOUCH_BEGAN:
+                //this._topDisplayLabel.setString("Touch Down");
+                break;
+
+            case ccui.Widget.TOUCH_MOVED:
+                //this._topDisplayLabel.setString("Touch Move");
+                break;
+
+            case ccui.Widget.TOUCH_ENDED:
+                cc.director.runScene(new LoginScene());
+               // this._topDisplayLabel.setString("Touch Up");
+                break;
+
+            case ccui.Widget.TOUCH_CANCELED:
+              //  this._topDisplayLabel.setString("Touch Cancelled");
+                break;
+            default:
+                break;
+        }
     }
 });
 

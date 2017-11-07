@@ -5,7 +5,7 @@ SET CUR_DIR=%~dp0
 SET V=1.0.0.0
 @echo "指定 Manifest 文件的主版本号:" + %V%
 
-SET U=http://192.168.0.115/SERVER/test/res/
+SET U=http://192.168.0.115/SERVER/test/
 @echo "指定服务器远程包的地址，这个地址需要和最初发布版本中 Manifest 文件的远程包地址一致，否则无法检测到更新。:" + %U%
 
 SET S=E:\workspace\js\mytest
