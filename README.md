@@ -37,7 +37,9 @@ HotUpdate2 的热更特点：
  ``` js
 	/**
 	 *   注册热更回调
-	 *   注意如果有文件更新后 不会抛出 jsb.EventAssetsManager.UPDATE_FINISHED 加载完成时间，会自动 cc.game.restart
+	 *   注意如果有文件更新后 不会抛出 jsb.EventAssetsManager.UPDATE_FINISHED 加载完成事件，会自动 cc.game.restart
+	     其他方式，比如检测无加载文件等 会抛出 jsb.EventAssetsManager.UPDATE_FINISHED 
+	 
 	 * @param flag 标记  8表示下载完成  5表示正在下载  其他表示失败
 	 * @param percent
 	 */
