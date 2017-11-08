@@ -382,9 +382,29 @@
  HotUpdate.js
  游戏的核心热更类
 
- //使用方法：
- var HotUpdate = require('HotUpdate');
- HotUpdate.hotUpdate();
+ / /**
+ *   注册热更回调
+ *   注意如果有文件更新后 不会抛出 jsb.EventAssetsManager.UPDATE_FINISHED 加载完成时间，会自动 cc.game.restart
+ *   
+ * @param flag 标记  8表示下载完成  5表示正在下载  其他表示失败
+ * @param percent
+var fun = function (flag,percent) {
+    if(flag == jsb.EventAssetsManager.UPDATE_FINISHED){
+        cc.log("加载完成！");
+        cc.director.runScene(new HelloWorldScene());
+    }else if(flag == jsb.EventAssetsManager.UPDATE_PROGRESSION){
+        cc.log("当前进度："+percent);
+    }else if (flag == jsb.EventAssetsManager.UPDATE_FAILED){//更新错误
+        cc.log("更新文件错误！");
+    }
+}
+// var hotupdate = new HotUpdate();
+// hotupdate.run(fun);
+
+
+var hotupdate2 = new HotUpdate2();
+hotupdate2.onLoad();
+hotupdate2.hotUpdate(fun);
 
  * @author antwand@sina.com
  * @time  2017/9/1
@@ -465,6 +485,25 @@
 
             });
         });
+    },
+    //更新失败
+    _loadError:function(flag){
+        var self = this
+        if (self._callback) {
+            self._callback(flag || jsb.EventAssetsManager.UPDATE_FAILED)
+        }
+        self.onDestroy();
+        // cc.log("_loadComplete");
+        // cc.loader.loadJs(["src/jsList.js"], function(){
+        //     cc.loader.loadJs(jsList, function(){
+        //         //cc.director.runScene(new HelloWorldScene());
+        //         if (self._callback) {
+        //             self._callback(flag || jsb.EventAssetsManager.UPDATE_FAILED)
+        //         }
+        //         self.onDestroy();
+        //
+        //     });
+        // });
     },
     //更新进度
     _updateProgress:function(){
@@ -565,6 +604,7 @@
                 // this.panel.retryBtn.active = true;
                 this._updating = false;
                 this._canRetry = true;
+                this._loadError(jsb.EventAssetsManager.UPDATE_FAILED)
                 break;
             case jsb.EventAssetsManager.ERROR_UPDATING:
                 //更新错误
