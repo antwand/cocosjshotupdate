@@ -2,7 +2,7 @@
 
 SET CUR_DIR=%~dp0
 
-SET V=1.0.0.4
+SET V=1.0.0.1
 @echo "指定 Manifest 文件的主版本号:" + %V%
 
 SET U=http://192.168.0.115/SERVER/test/

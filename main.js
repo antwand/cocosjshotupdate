@@ -96,6 +96,8 @@ cc.game.onStart = function(){
                         cc.director.runScene(new HelloWorldScene());
                     }else if(flag == jsb.EventAssetsManager.UPDATE_PROGRESSION){
                         cc.log("当前进度："+percent);
+                    }else if (flag == jsb.EventAssetsManager.UPDATE_FAILED){//更新错误
+                        cc.log("更新文件错误！");
                     }
                 }
                 // var hotupdate = new HotUpdate();

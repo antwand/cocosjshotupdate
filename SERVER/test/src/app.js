@@ -32,12 +32,12 @@ var HelloWorldLayer = cc.Layer.extend({
         // this.addChild(this.sprite, 0);
 
 
-        // this.sprite2 = new cc.Sprite(res.p_1_png);
-        // this.sprite2.attr({
-        //     x: size.width / 2 + 300,
-        //     y: size.height / 2 -240
-        // });
-        // this.addChild(this.sprite2, 2);
+        this.sprite2 = new cc.Sprite(res.p_1_png);
+        this.sprite2.attr({
+            x: size.width / 2 + 300,
+            y: size.height / 2 -240
+        });
+        this.addChild(this.sprite2, 2);
 
 
         // this.sprite3 = new cc.Sprite(res.chip_png);
@@ -71,7 +71,7 @@ var HelloWorldLayer = cc.Layer.extend({
                 break;
 
             case ccui.Widget.TOUCH_ENDED:
-                // cc.director.runScene(new LoginScene());
+                cc.director.runScene(new LoginScene());
                // this._topDisplayLabel.setString("Touch Up");
                 break;
 
