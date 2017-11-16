@@ -737,6 +737,10 @@ if (window.cc && cc.sys.isNative) {
         if (!cc.sys.isNative) {
             return;
         }
+
+
+
+
         this._storagePath = ((jsb.fileUtils ? jsb.fileUtils.getWritablePath() : '/') + 'blackjack-remote-asset/'+ this.gamename);
         cc.log('Storage path for remote asset : ' + this._storagePath);
 

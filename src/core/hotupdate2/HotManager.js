@@ -10,8 +10,8 @@ HotManager.setSearchPaths = function () {
     var searchPaths = ["assets/"]//jsb.fileUtils.getSearchPaths();
     var newPaths = ((jsb.fileUtils ? jsb.fileUtils.getWritablePath() : '/') + 'blackjack-remote-asset/all/');
     searchPaths.unshift(newPaths)
-    var newPaths2 = ((jsb.fileUtils ? jsb.fileUtils.getWritablePath() : '/') + 'blackjack-remote-asset/baijiale/');
-    searchPaths.unshift(newPaths2)
+    // var newPaths2 = ((jsb.fileUtils ? jsb.fileUtils.getWritablePath() : '/') + 'blackjack-remote-asset/baijiale/');
+    // searchPaths.unshift(newPaths2)
     var arr = Tool.unique(searchPaths)
     console.log(JSON.stringify(arr))
     jsb.fileUtils.setSearchPaths(arr);

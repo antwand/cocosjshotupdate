@@ -16,7 +16,7 @@ var Fight_100_Layer = cc.Layer.extend({
         // 3. add your codes below...
         // add a label shows "Hello World"
         // create and initialize a label
-        var helloLabel = new cc.LabelTTF("========== fight scene 444 ====", "Arial", 38);
+        var helloLabel = new cc.LabelTTF("========== fight scene 000 ====", "Arial", 38);
         // position the label on the center of the screen
         helloLabel.x = size.width / 2;
         helloLabel.y = size.height / 2 + 200;
