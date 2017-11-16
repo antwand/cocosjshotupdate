@@ -14,10 +14,13 @@
     "jsList" : [
         "src/resource.js",
 
+        "src/core/Tool.js",
         "src/core/hotupdate/HotUpdate.js",
         "src/core/hotupdate2/HotUpdate2.js",
+        "src/core/hotupdate2/HotManager.js",
 
 
         "src/app.js"
+
     ]
 }

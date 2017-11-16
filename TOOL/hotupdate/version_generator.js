@@ -13,6 +13,7 @@ var manifest = {
 
 var dest = './remote-assets/';
 var src = './jsb/';
+var filter_fold = '__filter_fold';
 
 // Parse arguments
 var i = 2;
@@ -36,6 +37,10 @@ while ( i < process.argv.length) {
     case '--src' :
     case '-s' :
         src = process.argv[i+1];
+        i += 2;
+        break;
+    case '-f' :
+        filter_fold = process.argv[i+1];
         i += 2;
         break;
     case '--dest' :
@@ -62,6 +67,15 @@ function readDir (dir, obj) {
         }
         subpath = path.join(dir, subpaths[i]);
         stat = fs.statSync(subpath);
+
+
+        //排除某个目录
+        if(subpath.indexOf(path.join(src, 'src' + filter_fold))>-1 || subpath.indexOf(path.join(src, 'res' + filter_fold)) > -1){
+            continue;
+        }
+
+
+
         if (stat.isDirectory()) {
             readDir(subpath, obj);
         }

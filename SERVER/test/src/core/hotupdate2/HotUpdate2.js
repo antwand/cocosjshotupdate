@@ -385,26 +385,53 @@
  / /**
  *   注册热更回调
  *   注意如果有文件更新后 不会抛出 jsb.EventAssetsManager.UPDATE_FINISHED 加载完成时间，会自动 cc.game.restart
- *   
+ *
+ * @param flag 标记  8表示下载完成  5表示正在下载  其他表示失败
+ * @param percent
+ var callBack =function () {
+                cc.director.runScene(new LoginScene());
+            }
+
+
+ /**
+ *   注册热更回调
  * @param flag 标记  8表示下载完成  5表示正在下载  其他表示失败
  * @param percent
 var fun = function (flag,percent) {
-    if(flag == jsb.EventAssetsManager.UPDATE_FINISHED){
+    if (flag == jsb.EventAssetsManager.UPDATE_FINISHED) {
         cc.log("加载完成！");
-        cc.director.runScene(new HelloWorldScene());
-    }else if(flag == jsb.EventAssetsManager.UPDATE_PROGRESSION){
-        cc.log("当前进度："+percent);
-    }else if (flag == jsb.EventAssetsManager.UPDATE_FAILED){//更新错误
+        callBack()
+    } else if (flag == jsb.EventAssetsManager.UPDATE_PROGRESSION) {
+        cc.log("当前进度：" + percent);
+    } else if (flag == jsb.EventAssetsManager.UPDATE_FAILED) {//更新错误
         cc.log("更新文件错误！");
+    }else{
+        callBack()
     }
+
 }
 // var hotupdate = new HotUpdate();
 // hotupdate.run(fun);
 
+if (window.cc && cc.sys.isNative) {
+    var hotupdate2 = new HotUpdate2();
+    hotupdate2.onLoad();
+    hotupdate2.hotUpdate(fun);
+}else{
+    callBack()
+}
 
-var hotupdate2 = new HotUpdate2();
-hotupdate2.onLoad();
-hotupdate2.hotUpdate(fun);
+
+
+
+ if (window.cc && cc.sys.isNative) {
+        var hotUpdateSearchPaths = cc.sys.localStorage.getItem('HotUpdateSearchPaths');
+        if (hotUpdateSearchPaths) {
+            jsb.fileUtils.setSearchPaths(JSON.parse(hotUpdateSearchPaths));
+        }
+    }
+
+
 
  * @author antwand@sina.com
  * @time  2017/9/1
@@ -423,6 +450,8 @@ hotupdate2.hotUpdate(fun);
         _canRetry: false,
         _storagePath: '',
     // },
+
+    gamename:'',//热更放置的文件
 
 
 
@@ -467,51 +496,56 @@ hotupdate2.hotUpdate(fun);
             // this.panel.updateBtn.active = false;
             this._updating = true;
         }else{
-            this._loadComplete();
+            this.__loadCallBackHandle();
             cc.log("h5 platform ");
         }
     },
     // 记载完成 开始启动到主场景
-    _loadComplete:function(flag){
+    __loadCallBackHandle:function(flag,percent){
         var self = this
-        cc.log("_loadComplete");
-        cc.loader.loadJs(["src/jsList.js"], function(){
-            cc.loader.loadJs(jsList, function(){
-                //cc.director.runScene(new HelloWorldScene());
-                if (self._callback) {
-                    self._callback(flag || jsb.EventAssetsManager.UPDATE_FINISHED)
-                }
-                self.onDestroy();
+        cc.log("__loadCallBackHandle");
 
-            });
-        });
+        if (window.cc && cc.sys.isNative) {
+            if (flag == jsb.EventAssetsManager.UPDATE_FAILED) {//可以重试热更 调用retry()
+                console.log("可以重试热更 调用retry()");
+                self.__loadCallBack(flag);
+            } else if (flag == jsb.EventAssetsManager.ALREADY_UP_TO_DATE) {//已经是最新版本了
+                console.log("已经是最新版本了");
+                self.__loadCallBack(flag);
+            } else if (flag == jsb.EventAssetsManager.UPDATE_PROGRESSION) {//进度事件
+                cc.log("percent: " + percent);
+                self.__loadCallBack(flag);
+
+            } else if (flag == jsb.EventAssetsManager.UPDATE_FINISHED) {
+                cc.loader.loadJs(["src/jsList.js"], function () {
+                    cc.loader.loadJs(jsList, function () {
+                        //cc.director.runScene(new HelloWorldScene());
+                        self.__loadCallBack(flag);
+                    });
+                });
+                // cc.director.getScheduler().scheduleOnce(self._onlineScheduleHandle,  1.1);
+                // cc.director.getScheduler().schedule(this._onlineScheduleHandle, this, 1.1,cc.REPEAT_FOREVER, 0, false, "keyCountDownTime");
+                console.log("热更完成=》" + flag);
+            } else {
+                self.__loadCallBack(flag);
+            }
+        }else{
+            self.__loadCallBack(flag);
+        }
     },
-    //更新失败
-    _loadError:function(flag){
-        var self = this
+    __loadCallBack:function (flag) {
+        var self = this;
         if (self._callback) {
-            self._callback(flag || jsb.EventAssetsManager.UPDATE_FAILED)
+            self._callback(flag)
         }
-        self.onDestroy();
-        // cc.log("_loadComplete");
-        // cc.loader.loadJs(["src/jsList.js"], function(){
-        //     cc.loader.loadJs(jsList, function(){
-        //         //cc.director.runScene(new HelloWorldScene());
-        //         if (self._callback) {
-        //             self._callback(flag || jsb.EventAssetsManager.UPDATE_FAILED)
-        //         }
-        //         self.onDestroy();
-        //
-        //     });
-        // });
-    },
-    //更新进度
-    _updateProgress:function(){
-        cc.log("当前进度：" + this._percent);
-        if (this._callBack) {
-            this._callBack(jsb.EventAssetsManager.UPDATE_PROGRESSION, this._percent);
+
+        if (window.cc && cc.sys.isNative) {
+            if (flag != jsb.EventAssetsManager.UPDATE_PROGRESSION) {
+                self.onDestroy();
+            }
+        }else{
+            self.onDestroy();
         }
-        // this._progress.string = "" + this._percent;
     },
 
 
@@ -556,11 +590,12 @@ hotupdate2.hotUpdate(fun);
         var self =this;
         var needRestart = false;
         var failed = false;
+        var alreadyUpToDate = false;
+
         console.log("updateCb："+event.getEventCode())
         switch (event.getEventCode())
         {
             case jsb.EventAssetsManager.ERROR_NO_LOCAL_MANIFEST://没有热更文件
-                self._loadComplete()
                 // this.panel.info.string = 'No local manifest file found, hot update skipped.';
                 failed = true;
                 break;
@@ -572,7 +607,8 @@ hotupdate2.hotUpdate(fun);
                 // this.panel.byteLabel.string = event.getDownloadedBytes() + ' / ' + event.getTotalBytes();
 
                 this._percent = event.getPercent()
-                self._updateProgress(jsb.EventAssetsManager.UPDATE_PROGRESSION)
+                // self._updateProgress(jsb.EventAssetsManager.UPDATE_PROGRESSION)
+                this.__loadCallBackHandle(jsb.EventAssetsManager.UPDATE_PROGRESSION,this._percent);
                 var msg = event.getMessage();
                 if (msg) {
                     // this.panel.info.string = 'Updated file: ' + msg;
@@ -586,13 +622,14 @@ hotupdate2.hotUpdate(fun);
                 failed = true;
                 break;
             case jsb.EventAssetsManager.ALREADY_UP_TO_DATE:
-                self._loadComplete()
+                // self.__loadCallBackHandle()
+                alreadyUpToDate = true;
                 //已经更新到最新版本了
                 // this.panel.info.string = 'Already up to date with the latest remote version.';
                 failed = true;
                 break;
             case jsb.EventAssetsManager.UPDATE_FINISHED:
-                //self._loadComplete(jsb.EventAssetsManager.UPDATE_FINISHED)
+                //self.__loadCallBackHandle(jsb.EventAssetsManager.UPDATE_FINISHED)
                 //更新完成
                 // this.panel.info.string = 'Update finished. ' + event.getMessage();
                 needRestart = true;
@@ -604,7 +641,6 @@ hotupdate2.hotUpdate(fun);
                 // this.panel.retryBtn.active = true;
                 this._updating = false;
                 this._canRetry = true;
-                this._loadError(jsb.EventAssetsManager.UPDATE_FAILED)
                 break;
             case jsb.EventAssetsManager.ERROR_UPDATING:
                 //更新错误
@@ -618,11 +654,22 @@ hotupdate2.hotUpdate(fun);
                 break;
         }
 
+
         if (failed) {
             cc.eventManager.removeListener(this._updateListener);
             this._updateListener = null;
             this._updating = false;
+
+            this.__loadCallBackHandle()
         }
+        if( this._canRetry == true){
+            this.__loadCallBackHandle(jsb.EventAssetsManager.UPDATE_FAILED)
+        }
+        if(alreadyUpToDate){
+            this.__loadCallBackHandle(jsb.EventAssetsManager.ALREADY_UP_TO_DATE)
+        }
+
+
 
         if (needRestart) {
             cc.eventManager.removeListener(this._updateListener);
@@ -631,17 +678,23 @@ hotupdate2.hotUpdate(fun);
             var searchPaths = jsb.fileUtils.getSearchPaths();
             console.log("1:searchPaths ：==========" + JSON.stringify(searchPaths));
             var newPaths = this._am.getLocalManifest().getSearchPaths();
-            cc.log(newPaths);
+            cc.log(JSON.stringify(newPaths));
             Array.prototype.unshift(searchPaths, newPaths);//在数组的searchPaths 添加 newPaths元素
             console.log("2:searchPaths：==========" + JSON.stringify(searchPaths));
             // This value will be retrieved and appended to the default search path during game startup,
             // please refer to samples/js-tests/main.js for detailed usage.
             // !!! Re-add the search paths in main.js is very important, otherwise, new scripts won't take effect.
             cc.sys.localStorage.setItem('HotUpdateSearchPaths', JSON.stringify(searchPaths));
-            jsb.fileUtils.setSearchPaths(searchPaths);
+            var arr = Tool.unique(searchPaths)
+            console.log(JSON.stringify(arr))
+            // jsb.fileUtils.setSearchPaths(arr);
+            HotManager.setSearchPaths();
+            // jsb.fileUtils.setSearchPaths(searchPaths);
 
-            // cc.audioEngine.stopAll();
+            this.__loadCallBackHandle(jsb.EventAssetsManager.UPDATE_FINISHED)
+            cc.audioEngine.stopAll();
             cc.game.restart();
+
         }
     },
 
@@ -671,13 +724,20 @@ hotupdate2.hotUpdate(fun);
     
 
 
-    // use this for initialization
-    onLoad: function () {
+    /**
+     *
+     * @param manifestUrl  本地的  manifestUrl 路径
+     * @param gamename 游戏热更新到的根目录
+     */
+    onLoad: function (manifestUrl,gamename) {
+        this.gamename = gamename;
+        this.manifestUrl = manifestUrl;
+
         // Hot update is only available in Native build
         if (!cc.sys.isNative) {
             return;
         }
-        this._storagePath = ((jsb.fileUtils ? jsb.fileUtils.getWritablePath() : '/') + 'blackjack-remote-asset');
+        this._storagePath = ((jsb.fileUtils ? jsb.fileUtils.getWritablePath() : '/') + 'blackjack-remote-asset/'+ this.gamename);
         cc.log('Storage path for remote asset : ' + this._storagePath);
 
         // Setup your own version compare handler, versionA and B is versions in string
@@ -707,7 +767,8 @@ hotupdate2.hotUpdate(fun);
         };
 
         // Init with empty manifest url for testing custom manifest
-        this._am = new jsb.AssetsManager("res/project.manifest",this._storagePath,this.versionCompareHandle);
+
+        this._am = new jsb.AssetsManager(this.manifestUrl,this._storagePath,this.versionCompareHandle);
         // this._am = new jsb.AssetsManager('', this._storagePath, this.versionCompareHandle);
         // if (!cc.sys.ENABLE_GC_FOR_NATIVE_OBJECTS) {
             this._am.retain();

@@ -2,16 +2,19 @@
 
 SET CUR_DIR=%~dp0
 
-SET V=1.0.0.1
-@echo "指定 Manifest 文件的主版本号:" + %V%
+cd "%CUR_DIR%..\.."
 
-SET U=http://192.168.0.115/SERVER/test/
-@echo "指定服务器远程包的地址，这个地址需要和最初发布版本中 Manifest 文件的远程包地址一致，否则无法检测到更新。:" + %U%
 
-SET S=D:\xampp\htdocs\SERVER\test
-@echo "本地原生打包版本的目录相对路径：" + %S%
+SET SERVER=D:\xampp\htdocs\SERVER\test
 
-SET D=res/
-@echo "保存 Manifest 文件的地址：" + %D%
+copy /y ".\res\project.manifest" %SERVER%
+copy /y ".\res\version.manifest" %SERVER%
 
-START /B node version_generator.js -v %V% -u %U% -s %S% -d %D%
+
+XCOPY /e/h/y .\res %SERVER%\res\
+XCOPY /e/h/y .\src %SERVER%\src\
+
+@echo "success"
+
+
+pause

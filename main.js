@@ -79,35 +79,16 @@ cc.game.onStart = function(){
     // The game will be resized when browser size change
     cc.view.resizeWithBrowserSize(true);
 
+
+
+
+
     //load resources
     cc.LoaderScene.preload(g_resources, function () {
 
 
+            app.init();
 
-
-                /**
-                 *   注册热更回调
-                 * @param flag 标记  8表示下载完成  5表示正在下载  其他表示失败
-                 * @param percent
-                 */
-                var fun = function (flag,percent) {
-                    if(flag == jsb.EventAssetsManager.UPDATE_FINISHED){
-                        cc.log("加载完成！");
-                        cc.director.runScene(new HelloWorldScene());
-                    }else if(flag == jsb.EventAssetsManager.UPDATE_PROGRESSION){
-                        cc.log("当前进度："+percent);
-                    }else if (flag == jsb.EventAssetsManager.UPDATE_FAILED){//更新错误
-                        cc.log("更新文件错误！");
-                    }
-                }
-                // var hotupdate = new HotUpdate();
-                // hotupdate.run(fun);
-
-
-
-                var hotupdate2 = new HotUpdate2();
-                hotupdate2.onLoad();
-                hotupdate2.hotUpdate(fun);
 
 
        // cc.director.runScene(new HelloWorldScene());

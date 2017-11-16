@@ -73,3 +73,16 @@ HotUpdate2 的热更特点：
 3：自动打包工具 TOOL 
 -----------
 
+
+
+4:可以分拆成多个小包
+--------------------
+
+
+
+5:编译使用
+--------------------
+cocos compile -p android --android-studio
+
+ssh-keygen -t rsa -C "antwand@sina.com"
+
