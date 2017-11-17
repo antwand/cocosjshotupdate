@@ -4,8 +4,8 @@ SET CUR_DIR=%~dp0
 
 cd "%CUR_DIR%..\.."
 
-
 SET SERVER=D:\xampp\htdocs\SERVER\test
+SET SVN_SERVER=D:\xampp\htdocs\SERVER\test
 
 copy /y ".\res\project.manifest" %SERVER%
 copy /y ".\res\version.manifest" %SERVER%
